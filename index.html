@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>啊B專有 估歌仔</title>
+    <title>啊B專享 估歌仔</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -72,7 +72,9 @@
 </head>
 <body>
     <h1>🎵 啊B專有 估歌仔 🎵</h1>
-    <div id="player-container">
+    <div id="player-container" style="position: relative; width: 560px; height: 315px; overflow: hidden;">
+        <div id="player" style="position: absolute; top: -30px; left: 0; width: 560px; height: 345px;"></div>
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 30px; background: black; z-index: 10;"></div>
         <div id="player"></div>
     </div>
     <br>
