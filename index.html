@@ -49,11 +49,10 @@
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
         }
         
-        #player {
+        #player-container {
             margin-top: 20px;
-            opacity: 0;
-            transform: scale(0.8);
-            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+            opacity: 1;
+            transition: opacity 1s ease-in-out;
         }
         
         .countdown {
@@ -73,7 +72,9 @@
 </head>
 <body>
     <h1>🎵 估歌仔 - MC 版 🎵</h1>
-    <iframe id="player" width="560" height="315" frameborder="0" allowfullscreen></iframe>
+    <div id="player-container">
+        <div id="player"></div>
+    </div>
     <br>
     <button onclick="playRandomSong()">開始遊戲</button>
     <button onclick="changeSegment()">換一段</button>
@@ -85,6 +86,11 @@
     <div id="score">分數: 0</div>
     
     <script>
+        let player;
+        let currentSong = null;
+        let currentStart = 0;
+        let score = 0;
+
         const songs = [
             { name: "光輝歲月", artist: "Beyond", videoId: "jxuCqY_3MoE" },
             { name: "浮誇", artist: "陳奕迅", videoId: "e0wMoyxwI6c" },
@@ -92,10 +98,18 @@
             { name: "K歌之王", artist: "陳奕迅", videoId: "CmGJrH8PEY8" }
         ];
         
-        let currentSong = null;
-        let currentStart = 0;
-        let score = 0;
-
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '315',
+                width: '560',
+                videoId: '',
+                playerVars: { 'playsinline': 1 },
+                events: {
+                    'onReady': playRandomSong
+                }
+            });
+        }
+        
         function getRandomStart() {
             return Math.floor(Math.random() * 150) + 10;
         }
@@ -105,9 +119,11 @@
             currentSong = songs[randomIndex];
             currentStart = getRandomStart();
             
-            document.getElementById("player").src = `https://www.youtube.com/embed/${currentSong.videoId}?start=${currentStart}&end=${currentStart + 30}&autoplay=1&enablejsapi=1`;
-            document.getElementById("player").style.opacity = "1";
-            document.getElementById("player").style.transform = "scale(1)";
+            player.loadVideoById({
+                videoId: currentSong.videoId,
+                startSeconds: currentStart,
+                endSeconds: currentStart + 30
+            });
             
             document.getElementById("answer").innerHTML = `🎵 歌名: <strong>${currentSong.name}</strong><br>👤 歌手: <strong>${currentSong.artist}</strong>`;
             document.getElementById("answer").style.display = "none";
@@ -117,7 +133,7 @@
         function changeSegment() {
             if (!currentSong) return;
             currentStart = getRandomStart();
-            document.getElementById("player").src = `https://www.youtube.com/embed/${currentSong.videoId}?start=${currentStart}&end=${currentStart + 30}&autoplay=1&enablejsapi=1`;
+            player.seekTo(currentStart);
         }
         
         function showAnswer() {
@@ -156,5 +172,6 @@
             }, 1000);
         }
     </script>
+    <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
