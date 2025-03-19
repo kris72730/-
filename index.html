@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>估歌仔 - YouTube 版</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(45deg, #ff4e50, #fc913a);
+            color: white;
+            animation: fadeIn 1s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        #answer {
+            display: none;
+            font-size: 24px;
+            margin-top: 20px;
+            color: yellow;
+            opacity: 0;
+            animation: fadeInAnswer 1s forwards;
+        }
+        
+        @keyframes fadeInAnswer {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        button {
+            font-size: 18px;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: linear-gradient(90deg, #ff4e50, #fc913a);
+            color: white;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+        
+        #player {
+            margin-top: 20px;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+        }
+        
+        .countdown {
+            font-size: 40px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: yellow;
+            display: none;
+        }
+
+        #score {
+            font-size: 24px;
+            margin-top: 20px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎵 估歌仔 - MC 版 🎵</h1>
+    <iframe id="player" width="560" height="315" frameborder="0" allowfullscreen></iframe>
+    <br>
+    <button onclick="playRandomSong()">開始遊戲</button>
+    <button onclick="changeSegment()">換一段</button>
+    <button onclick="showAnswer()">顯示答案</button>
+    <button onclick="correctAnswer()">✅ 正確</button>
+    <button onclick="wrongAnswer()">❌ 錯誤</button>
+    <div id="answer"></div>
+    <div class="countdown" id="countdown"></div>
+    <div id="score">分數: 0</div>
+    
+    <script>
+        const songs = [
+            { name: "光輝歲月", artist: "Beyond", videoId: "jxuCqY_3MoE" },
+            { name: "浮誇", artist: "陳奕迅", videoId: "e0wMoyxwI6c" },
+            { name: "喜歡你", artist: "Beyond", videoId: "ApWOaCTxMpA" },
+            { name: "K歌之王", artist: "陳奕迅", videoId: "CmGJrH8PEY8" }
+        ];
+        
+        let currentSong = null;
+        let currentStart = 0;
+        let score = 0;
+
+        function getRandomStart() {
+            return Math.floor(Math.random() * 150) + 10;
+        }
+        
+        function playRandomSong() {
+            let randomIndex = Math.floor(Math.random() * songs.length);
+            currentSong = songs[randomIndex];
+            currentStart = getRandomStart();
+            
+            document.getElementById("player").src = `https://www.youtube.com/embed/${currentSong.videoId}?start=${currentStart}&end=${currentStart + 30}&autoplay=1&enablejsapi=1`;
+            document.getElementById("player").style.opacity = "1";
+            document.getElementById("player").style.transform = "scale(1)";
+            
+            document.getElementById("answer").innerHTML = `🎵 歌名: <strong>${currentSong.name}</strong><br>👤 歌手: <strong>${currentSong.artist}</strong>`;
+            document.getElementById("answer").style.display = "none";
+            startCountdown();
+        }
+        
+        function changeSegment() {
+            if (!currentSong) return;
+            currentStart = getRandomStart();
+            document.getElementById("player").src = `https://www.youtube.com/embed/${currentSong.videoId}?start=${currentStart}&end=${currentStart + 30}&autoplay=1&enablejsapi=1`;
+        }
+        
+        function showAnswer() {
+            document.getElementById("answer").style.display = "block";
+        }
+        
+        function correctAnswer() {
+            score += 1;
+            updateScore();
+            playRandomSong();
+        }
+        
+        function wrongAnswer() {
+            updateScore();
+            playRandomSong();
+        }
+        
+        function updateScore() {
+            document.getElementById("score").innerText = "分數: " + score;
+        }
+        
+        function startCountdown() {
+            let count = 10;
+            let countdownElem = document.getElementById("countdown");
+            countdownElem.style.display = "block";
+            countdownElem.innerText = count;
+            
+            let interval = setInterval(() => {
+                count--;
+                countdownElem.innerText = count;
+                if (count === 0) {
+                    clearInterval(interval);
+                    countdownElem.innerText = "時間到！";
+                    countdownElem.style.color = "red";
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
